@@ -1,22 +1,22 @@
 {
   "private": true,
-  "displayName": "Plugin Name",
-  "name": "homebridge-plugin-name",
+  "displayName": "Garagedoor",
+  "name": "homebridge-pi-gpio-garagedoor",
   "version": "1.0.0",
-  "description": "A short description about what your plugin does.",
+  "description": "Homebridge plugin to control a garagedoor via Raspberry Pi GPIO pins",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/USERNAME/GITHUB_PROJECT_NAME.git"
+    "url": "git://github.com/joerg-github/homebridge-pi-gpio-garagedoor.git"
   },
   "bugs": {
-    "url": "https://github.com/USERNAME/GITHUB_PROJECT_NAME/issues"
+    "url": "https://github.com/joerg-github/homebridge-pi-gpio-garagedoor/issues"
   },
   "engines": {
     "node": ">=10.17.0",
     "homebridge": ">=1.0.0"
   },
-  "main": "dist/index.js",
+  "main": "dist/accessory.js",
   "scripts": {
     "lint": "eslint src/**.ts --max-warnings=0",
     "watch": "npm run build && npm link && nodemon",
