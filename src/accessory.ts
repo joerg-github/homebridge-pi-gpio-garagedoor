@@ -2,6 +2,7 @@ import {
   AccessoryConfig,
   AccessoryPlugin,
   API,
+  Characteristic,
   CharacteristicEventTypes,
   CharacteristicGetCallback,
   CharacteristicSetCallback,
@@ -12,7 +13,9 @@ import {
 } from 'homebridge';
 import { GarageDoorAccessoryConfig } from './garageDoorAccessoryConfig';
 import { GarageDoorConfig } from './garageDoorConfig';
-import { GarageDoorControl } from './garageDoorControl';
+import { 
+  GarageDoorControl,
+  GarageDoorControlEventTypes } from './garageDoorControl';
 
 
 let hap: HAP;
@@ -34,29 +37,32 @@ class GarageDoor implements AccessoryPlugin {
 
   private readonly garageDoorOpenerService: Service;
   private readonly informationService: Service;
+  private characteristicCurrentDoorState: Characteristic;
+  private characteristicCurrentPosition: Characteristic;
 
   constructor(log: Logging, config: AccessoryConfig) {
     this.log = log;
     this.name = config.name;
     this.garageDoorConfig = new GarageDoorAccessoryConfig(log, config);
-    this.garageDoorControl = new GarageDoorControl(log, this.garageDoorConfig);
 
     this.garageDoorOpenerService = new hap.Service.GarageDoorOpener(this.name);
 
-    // https://developer.apple.com/documentation/homekit/hmcharacteristictypecurrentdoorstate
-    this.garageDoorOpenerService.getCharacteristic(hap.Characteristic.CurrentDoorState)
+    // -- CurrentDoorState -- https://developer.apple.com/documentation/homekit/hmcharacteristictypecurrentdoorstate
+    this.characteristicCurrentDoorState = this.garageDoorOpenerService
+      .getCharacteristic(hap.Characteristic.CurrentDoorState)
       .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
         log.info('Current door state was returned: ' + this.garageDoorControl.currentDoorState);
         callback(undefined, this.garageDoorControl.currentDoorState);
       })
       .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         this.garageDoorControl.currentDoorState = value as number;
-        log.info('Curretn door state was set to: ' + this.garageDoorControl.currentDoorState);
+        log.info('Current door state was set to: ' + this.garageDoorControl.currentDoorState);
         callback();
       });
 
-    // https://developer.apple.com/documentation/homekit/hmcharacteristictypetargetdoorstate
-    this.garageDoorOpenerService.getCharacteristic(hap.Characteristic.TargetDoorState)
+    // -- TargetDoorState -- https://developer.apple.com/documentation/homekit/hmcharacteristictypetargetdoorstate
+    this.garageDoorOpenerService
+      .getCharacteristic(hap.Characteristic.TargetDoorState)
       .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
         log.info('Target door state was returned: ' + this.garageDoorControl.targetDoorState);
         callback(undefined, this.garageDoorControl.targetDoorState);
@@ -67,11 +73,36 @@ class GarageDoor implements AccessoryPlugin {
         callback();
       });  
 
+    // -- CurrentPosition -- https://developer.apple.com/documentation/homekit/hmcharacteristictypecurrentposition
+    this.characteristicCurrentPosition = this.garageDoorOpenerService
+      .getCharacteristic(hap.Characteristic.CurrentPosition)
+      .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
+        log.info('Current position was returned: ' + this.garageDoorControl.currentPosition);
+        callback(undefined, this.garageDoorControl.currentPosition);
+      })
+      .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
+        this.garageDoorControl.currentPosition = value as number;
+        log.info('Curent position was set to: ' + this.garageDoorControl.currentPosition);
+        callback();
+      });  
+    
+    
     this.informationService = new hap.Service.AccessoryInformation()
-      .setCharacteristic(hap.Characteristic.Manufacturer, 'Custom Manufacturer')
-      .setCharacteristic(hap.Characteristic.Model, 'Custom Model');
+      .setCharacteristic(hap.Characteristic.Manufacturer, 'Jörg Mika')
+      .setCharacteristic(hap.Characteristic.Model, 'Raspberry Pi GPIO Garage Door');
 
-    log.info('Switch finished initializing!');
+
+    this.garageDoorControl = new GarageDoorControl(log, this.garageDoorConfig);
+    this.garageDoorControl.on(GarageDoorControlEventTypes.CHANGE, () => {
+      log.info('Current door state was set to: ' + this.garageDoorControl.currentDoorState);
+      this.characteristicCurrentDoorState.setValue(this.garageDoorControl.currentDoorState);
+
+      log.info('Curent position was set to: ' + this.garageDoorControl.currentPosition);
+      this.characteristicCurrentPosition.setValue(this.garageDoorControl.currentPosition);
+    });
+  
+
+    log.info('GarageDoor finished initializing!');
   }
 
   /*

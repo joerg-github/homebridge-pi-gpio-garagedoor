@@ -1,0 +1,11 @@
+{
+    "accessory": "GarageDoor",
+    "name": "Garage",
+    "pinSwitchOpen": 1,
+    "pinSwitchOpenIsInverted": false,
+    "pinSwitchOpenPulsDuration": 200,
+    "pinSensorOpen": 2,
+    "pinSendoropenIsInverted": false,
+    "durationOpen": 10000,
+    "durationClose": 10000
+}        
