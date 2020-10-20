@@ -2,10 +2,16 @@
     "accessory": "GarageDoor",
     "name": "Garage",
     "pinSwitchOpen": 1,
-    "pinSwitchOpenIsInverted": false,
+    "pinSwitchOpenActiveLow": false,
     "pinSwitchOpenPulsDuration": 200,
+    "pinSwitchClose": 2,
+    "pinSwitchCloseActiveLow": false,
+    "pinSwitchClosePulsDuration": 200,
+    "pinSwitchConsecutiveCallDelay": 1000,
     "pinSensorOpen": 2,
-    "pinSendoropenIsInverted": false,
+    "pinSensorOpenActiveOpen": false,
+    "pinSensorClose": 2,
+    "pinSensorCloseActiveOpen": false,
     "durationOpen": 10000,
     "durationClose": 10000
-}        
+}
