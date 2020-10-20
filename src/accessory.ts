@@ -51,12 +51,10 @@ class GarageDoor implements AccessoryPlugin {
     this.characteristicCurrentDoorState = this.garageDoorOpenerService
       .getCharacteristic(hap.Characteristic.CurrentDoorState)
       .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
-        log.info('Current door state was returned: ' + this.garageDoorControl.currentDoorState);
         callback(undefined, this.garageDoorControl.currentDoorState);
       })
       .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         this.garageDoorControl.currentDoorState = value as number;
-        log.info('Current door state was set to: ' + this.garageDoorControl.currentDoorState);
         callback();
       });
 
@@ -64,12 +62,10 @@ class GarageDoor implements AccessoryPlugin {
     this.garageDoorOpenerService
       .getCharacteristic(hap.Characteristic.TargetDoorState)
       .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
-        log.info('Target door state was returned: ' + this.garageDoorControl.targetDoorState);
         callback(undefined, this.garageDoorControl.targetDoorState);
       })
       .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         this.garageDoorControl.targetDoorState = value as number;
-        log.info('Target door state was set to: ' + this.garageDoorControl.targetDoorState);
         callback();
       });  
 
@@ -77,12 +73,10 @@ class GarageDoor implements AccessoryPlugin {
     this.characteristicCurrentPosition = this.garageDoorOpenerService
       .getCharacteristic(hap.Characteristic.CurrentPosition)
       .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
-        log.info('Current position was returned: ' + this.garageDoorControl.currentPosition);
         callback(undefined, this.garageDoorControl.currentPosition);
       })
       .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         this.garageDoorControl.currentPosition = value as number;
-        log.info('Curent position was set to: ' + this.garageDoorControl.currentPosition);
         callback();
       });  
     
@@ -94,10 +88,8 @@ class GarageDoor implements AccessoryPlugin {
 
     this.garageDoorControl = new GarageDoorControl(log, this.garageDoorConfig);
     this.garageDoorControl.on(GarageDoorControlEventTypes.CHANGE, () => {
-      log.info('Current door state was set to: ' + this.garageDoorControl.currentDoorState);
       this.characteristicCurrentDoorState.setValue(this.garageDoorControl.currentDoorState);
 
-      log.info('Curent position was set to: ' + this.garageDoorControl.currentPosition);
       this.characteristicCurrentPosition.setValue(this.garageDoorControl.currentPosition);
     });
   
