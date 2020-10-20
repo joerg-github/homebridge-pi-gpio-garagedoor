@@ -17,7 +17,7 @@ enum ValueDoorState {
 
 const ValueDoorStateStr: string[] = ['OPEN', 'CLOSED', 'OPENING', 'CLOSING', 'STOPPED'];
 
-enum PostionState {
+enum PositionState {
   CLOSING = 0,
   OPENING = 1,
   STOPPED = 2
@@ -53,7 +53,7 @@ export class GarageDoorControl extends EventEmitter<Events> {
 
   private _currentDoorState: ValueDoorState = ValueDoorState.CLOSED;
   private _targetDoorState: ValueDoorState = ValueDoorState.CLOSED;
-  private _positionState: PostionState = PostionState.STOPPED;
+  private _positionState: PositionState = PositionState.STOPPED;
   private _currentPosition: DoorPosition = 0;
   private _targetPosition: DoorPosition = 0;
   private currentPositionIntervall!: ReturnType<typeof setInterval>;
@@ -73,34 +73,35 @@ export class GarageDoorControl extends EventEmitter<Events> {
   }
 
   private pinStateToggle(pin: number, duration: number) {
+    this.log.debug('pinStateToggle: pin: %s, duration: %s ', pin, duration);
     rpio.write(pin, this.pinLogicalState2rpioState(pin, PinLogicalState.ON));
     setTimeout(() => {
       rpio.write(pin, this.pinLogicalState2rpioState(pin, PinLogicalState.OFF));
     }, duration);
   }
 
-  private triggerDoorOperation(positionState: PostionState) {
+  private triggerDoorOperation(positionState: PositionState) {
     this.log.debug('triggerDoorOperation: %s', PositionStateStr[positionState]);
 
     switch (positionState) {
-      case PostionState.CLOSING:
+      case PositionState.CLOSING:
         this.pinStateToggle(this.config.pinSwitchClose, this.config.pinSwitchClosePulsDuration);
         break;
     
-      case PostionState.OPENING:
+      case PositionState.OPENING:
         this.pinStateToggle(this.config.pinSwitchOpen, this.config.pinSwitchOpenPulsDuration);
         break;
 
-      case PostionState.STOPPED:
+      case PositionState.STOPPED:
         break;
     }
   }
 
   private pinChanged(pin: number) {
-    this.log.debug('Input pin no: %s change deteced. state: %s', pin, PinLogicalStateStr[this.pinStateRead(pin)]);
+    this.log.debug('pinChanged: pin: %s, state: %s', pin, PinLogicalStateStr[this.pinStateRead(pin)]);
     switch (pin) {
       case this.config.pinSensorClose:
-        this.log.info('Sensor Close deteced');
+        this.log.info('SpinChanged: ensor Close deteced');
         if (this.pinStateRead(pin) === PinLogicalState.ON) {
           this.clearPositionTimeout;
           this.currentDoorState = ValueDoorState.CLOSED;
@@ -108,7 +109,7 @@ export class GarageDoorControl extends EventEmitter<Events> {
         break;
       
       case this.config.pinSensorOpen:
-        this.log.info('Sensor Open deteced');
+        this.log.info('pinChanged: Sensor Open deteced');
         if (this.pinStateRead(pin) === PinLogicalState.ON) {
           this.clearPositionTimeout;
           this.currentDoorState = ValueDoorState.OPEN;
@@ -116,7 +117,7 @@ export class GarageDoorControl extends EventEmitter<Events> {
         break;
 
       default:
-        this.log.error('Upps. Unknown pin change detected.');
+        this.log.error('pinChanged: Upps. Unknown pin change detected.');
         break;
     }
   }
@@ -132,31 +133,30 @@ export class GarageDoorControl extends EventEmitter<Events> {
   }
 
   public set currentDoorState(value: ValueDoorState) {
-    this.log.info('Set currentDoorState: %s, is: %s', value, ValueDoorStateStr[this._currentDoorState]);   
-
     if (this._currentDoorState !== value) {
+      this.log.info('Set currentDoorState: %s, is: %s', ValueDoorStateStr[value], ValueDoorStateStr[this._currentDoorState]);   
       this._currentDoorState = value;
       switch (value) {
         case ValueDoorState.CLOSED:
           this._currentPosition = 0;
-          this._positionState = PostionState.STOPPED;
+          this._positionState = PositionState.STOPPED;
           break;
     
         case ValueDoorState.OPEN:
           this._currentPosition = 100;
-          this._positionState = PostionState.STOPPED;
+          this._positionState = PositionState.STOPPED;
           break;
 
         case ValueDoorState.OPENING:
-          this._positionState = PostionState.OPENING;
+          this._positionState = PositionState.OPENING;
           break;
 
         case ValueDoorState.CLOSING:
-          this._positionState = PostionState.CLOSING;
+          this._positionState = PositionState.CLOSING;
           break;
 
         case ValueDoorState.STOPPED:
-          this._positionState = PostionState.STOPPED;
+          this._positionState = PositionState.STOPPED;
           break;
 
         default:
@@ -171,9 +171,8 @@ export class GarageDoorControl extends EventEmitter<Events> {
   }
 
   public set targetDoorState(value: ValueDoorState) {
-    this.log.info('Set targetDoorState: %s, is %s', value, ValueDoorStateStr[this._targetDoorState]);
-
     if (this._targetDoorState !== value) {         
+      this.log.info('Set targetDoorState: %s, is %s', ValueDoorStateStr[value], ValueDoorStateStr[this._targetDoorState]);
       this._targetDoorState = value;
   
       switch (value) {
@@ -198,7 +197,7 @@ export class GarageDoorControl extends EventEmitter<Events> {
 
   public set currentPosition(value: DoorPosition) {
     if (this._currentPosition !== value) {
-      this.log.info('Set currentPosition: %s, is %s', value, this._currentPosition);
+      this.log.debug('Set currentPosition: %s, is %s', value, this._currentPosition);
 
       this._currentPosition = value;
 
@@ -219,19 +218,18 @@ export class GarageDoorControl extends EventEmitter<Events> {
     let difPosition: DoorPosition;
     let duration: number;
     let delayDoorTrigger = 0;
-    const newPositionState: PostionState = (value > this.currentPosition ? PostionState.OPENING : PostionState.CLOSING);
-
-    this.log.info('Set targetPosition: %s, is: %s', value, this._targetPosition);
-      
+    const newPositionState: PositionState = (value > this.currentPosition ? PositionState.OPENING : PositionState.CLOSING);
+    
     if (this._targetPosition !== value) {
+      this.log.debug('Set targetPosition: %s, is: %s', value, this._targetPosition);
       this._targetPosition = value;
 
       // check if door is moving in the oppesite diretion
-      if (this.positionState !== PostionState.STOPPED) {
+      if (this.positionState !== PositionState.STOPPED) {
         if (newPositionState !== this.positionState ) {
           this.log.info('Door is moving alread. Stopping Door');                
           this.triggerDoorOperation(newPositionState);
-          delayDoorTrigger = (newPositionState === PostionState.CLOSING 
+          delayDoorTrigger = (newPositionState === PositionState.CLOSING 
             ? this.config.pinSwitchClosePulsDuration
             : this.config.pinSwitchOpenPulsDuration) + this.config.pinSwitchConsecutiveCallDelay;
         }
@@ -239,8 +237,8 @@ export class GarageDoorControl extends EventEmitter<Events> {
       }
 
       difPosition = Math.abs(this.targetPosition - this.currentPosition);
-      this.log.info('Door position diff: %s', difPosition);
-      if (newPositionState === PostionState.OPENING) {
+      this.log.debug('Door position diff: %s', difPosition);
+      if (newPositionState === PositionState.OPENING) {
         duration = Math.round(difPosition / 100 * this.config.durationOpen);   
         this.currentPositionIntervall = setInterval(() => {
           this.currentPosition++;
@@ -255,10 +253,10 @@ export class GarageDoorControl extends EventEmitter<Events> {
       this.positionState = newPositionState;
 
       this.currentPositionTimeout = setTimeout(() => {
-        this.log.info('currentPositionTimeout');
+        this.log.debug('currentPositionTimeout');
         clearInterval(this.currentPositionIntervall);
 
-        this._positionState = PostionState.STOPPED;
+        this._positionState = PositionState.STOPPED;
         this.currentPosition = this.targetPosition;
       }, duration);
 
@@ -272,30 +270,29 @@ export class GarageDoorControl extends EventEmitter<Events> {
       
             
     } else {
-      this.log.info('Current postion matches target postion %s', value);
+      this.log.debug('Current postion matches target postion %s', value);
     }  
   }
 
-  public get positionState(): PostionState {
+  public get positionState(): PositionState {
     return this._positionState;
   }
 
-  public set positionState(value: PostionState) {
-    this.log.info('Set positionState: %s, is %s', value, this._positionState);
-
+  public set positionState(value: PositionState) {
     if (this._positionState !== value) {
+      this.log.info('Set positionState: %s, is %s', PositionStateStr[value], PositionStateStr[this._positionState]);
       this._positionState = value;
       
       switch (value) {
-        case PostionState.CLOSING:
+        case PositionState.CLOSING:
           this._currentDoorState = ValueDoorState.CLOSING;
           break;
       
-        case PostionState.OPENING:
+        case PositionState.OPENING:
           this._currentDoorState = ValueDoorState.OPENING;
           break;
 
-        case PostionState.STOPPED:
+        case PositionState.STOPPED:
           this._currentDoorState = ValueDoorState.STOPPED;
           break;
 
