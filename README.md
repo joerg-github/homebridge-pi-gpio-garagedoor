@@ -11,35 +11,29 @@
 Homebridge Plugin to control a garage door via Raspberry PI GPIO pins.
 
 
-## Motivation
+## YAHP
+
+Yet Another Homebridge Plugin
+
+Of course there are already a lot of plugins for this purpose, but since I didn't find the one fitting exactly my needs, I thought this is a good opportunity to get more into TypeScript.
 
 ## Installation 
 
+- Install Homebridge. See the [Homebridge documentation](https://github.com/nfarina/homebridge#readme) for more information.
+- Install Plugin ```[sudo] npm install homebridge-pi-gpio-garagedoor```
+
 ## Homebrige configuration
 
-Sample configuration:
+Minimum configuration:
 ````
 "accessories": [
   {
     "accessory": "GarageDoor",
     "name": "Garage",
-    "pinSwitchOpen": 1,
-    "pinSwitchOpenActiveLow": false,
-    "pinSwitchOpenPulsDuration": 200,
-    "pinSwitchClose": 2,
-    "pinSwitchCloseActiveLow": false,
-    "pinSwitchClosePulsDuration": 200,
-    "pinSwitchConsecutiveCallDelay": 1000,
-    "pinSensorClose": 2,
-    "pinSensorCloseActiveOpen": false,   
-    "pinSensorOpen": 2,
-    "pinSensorCloseActiveOpen": false,
-    "durationOpen": 10000,
-    "durationClose": 10000
+    "pinSwitchOpen": 1
   }
 ]
 ````
-
 Fields:
 
 | Key | Default | Description |
