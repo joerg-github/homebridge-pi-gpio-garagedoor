@@ -53,3 +53,9 @@ Fields:
 |`pinSensorCloseActiveOpen` | false | True: Door is open is detected when sensor is open.
 |`durationOpen`| 10000 | Time in milliseconds to open a closed door completly
 |`durationClose` | 10000 | Time in milliseconds to close an open door completly
+
+
+## Pin numbering
+
+The pin numbers are identified by their physical header location: Pins 1 to 26 (A/B) or Pins 1 to 40 (A+/B+)
+<img src="https://www.raspberrypi.org/documentation/usage/gpio/images/GPIO-Pinout-Diagram-2.png" width=80%>
