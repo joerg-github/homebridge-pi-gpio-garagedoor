@@ -309,7 +309,7 @@ export class GarageDoorControl extends EventEmitter<Events> {
     log.info('Initializing GarageDoorControl');
 
     rpio.init({
-      mapping: 'gpio',
+      mapping: 'physical',
     });
 
     this.pinActiveLow[config.pinSwitchOpen] = config.pinSwitchOpenActiveLow;
