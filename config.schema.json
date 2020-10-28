@@ -1,0 +1,218 @@
+{
+  "pluginAlias": "GarageDoor",
+  "pluginType": "accessory",
+  "singular": false,
+  "headerDisplay": null,
+  "footerDisplay": null,
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "title": "Name",
+        "type": "string",
+        "required": true
+      },
+      "pinSwitchOpen": {
+        "title": "Pin Number",
+        "type": "number",
+        "required": true
+      },
+      "pinSwitchOpenActiveLow": {
+        "title": "Is Active Low",
+        "type": "boolean",
+        "placeholder": "false"
+      },
+      "pinSwitchOpenPulsDuration": {
+        "title": "Puls Duration [ms]",
+        "type": "number",
+        "placeholder": "200"
+      },
+      "pinSwitchClose": {
+        "title": "Pin Number",
+        "type": "number"
+      },
+      "pinSwitchCloseActiveLow": {
+        "title": "Is Active Low",
+        "type": "boolean",
+        "placeholder": "false",
+        "condition": {
+          "functionBody": "return model.pinSwitchClose ? true : false;"
+        }
+      },
+      "pinSwitchClosePulsDuration": {
+        "title": "Puls Duration [ms]",
+        "type": "number",
+        "placeholder": 200,
+        "condition": {
+          "functionBody": "return model.pinSwitchClose ? true : false;"
+        }
+      },
+      "pinSensorOpen": {
+        "title": "Pin Number",
+        "type": "number"
+      },
+      "pinSensorOpenActiveOpen": {
+        "title": "Is Active Open",
+        "type": "boolean",
+        "placeholder": "false",
+        "condition": {
+          "functionBody": "return model.pinSensorOpen ? true : false;"
+        }
+      },
+      "pinSensorClose": {
+        "title": "Pin Number",
+        "type": "number"
+      },
+      "pinSensorCloseActiveOpen": {
+        "title": "Is Active Open",
+        "type": "boolean",
+        "placeholder": "false",
+        "condition": {
+          "functionBody": "return model.pinSensorClose ? true : false;"
+        }
+      },
+      "durationOpen": {
+        "title": "Time [ms]",
+        "type": "number",
+        "placeholder": 10000
+      },
+      "durationClose": {
+        "title": "Time [ms]",
+        "type": "number",
+        "placeholder": 10000
+      }
+    }
+  },
+  "layout": [
+    "name",
+    {
+      "type": "fieldset",
+      "expandable": false,
+      "title": "Movement Control",
+      "description": "Settings for controlling the geragen door. The settings for Door-Open must be specified. If a separate output for Door-Close is to be used, this must also be entered. If the same output as for Door-Open is to be used, it can remain empty. ",
+      "items": [
+        {
+          "type": "flex",
+          "flex-flow": "row",
+          "items": [
+            {
+              "type": "fieldset",
+              "expandable": false,
+              "flex": "1 1 50%",
+              "title": "Open",
+              "description": "Output to trigger Door open.",
+              "items": [
+                "pinSwitchOpen",
+                "pinSwitchOpenPulsDuration",
+                "pinSwitchOpenActiveLow"
+              ]
+            },
+            {
+              "type": "fieldset",
+              "expandable": false,
+              "flex": "1 1 50%",
+              "title": "Close",
+              "description": "Output to trigger Door Close.",
+              "items": [
+                "pinSwitchClose",
+                "pinSwitchClosePulsDuration",
+                "pinSwitchCloseActiveLow"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "fieldset",
+      "expandable": false,
+      "title": "Sensors",
+      "description": "Specify inputs if sensors are used to monitor open and close states.",
+      "items": [
+        {
+          "type": "flex",
+          "flex-flow": "row",
+          "items": [
+            {
+              "type": "fieldset",
+              "expandable": false,
+              "title": "Open",
+              "flex": "1 1 50%",
+              "items": [
+                {
+                  "type": "flex",
+                  "flex-flow": "column",
+                  "items": [
+                    "pinSensorOpen",
+                    "pinSensorOpenActiveOpen"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "fieldset",
+              "expandable": false,
+              "title": "Close",
+              "flex": "1 1 50%",
+              "items": [
+                {
+                  "type": "flex",
+                  "flex-flow": "column",
+                  "items": [
+                    "pinSensorClose",
+                    "pinSensorCloseActiveOpen"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "fieldset",
+      "expandable": false,
+      "title": "Duration",
+      "description": "Time in milliseconds to open a closed door completly or to close an opened door. If sensor inputs are specified, the sensor status has priority. However, the status is set at the latest after the time has expired.",
+      "items": [
+        {
+          "type": "flex",
+          "flex-flow": "row",
+          "items": [
+            {
+              "type": "fieldset",
+              "expandable": false,
+              "title": "Open",
+              "flex": "1 1 50%",
+              "items": [
+                {
+                  "type": "flex",
+                  "flex-flow": "column",
+                  "items": [
+                    "durationOpen"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "fieldset",
+              "expandable": false,
+              "title": "Close",
+              "flex": "1 1 50%",
+              "items": [
+                {
+                  "type": "flex",
+                  "flex-flow": "column",
+                  "items": [
+                    "durationClose"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "display": null
+}
