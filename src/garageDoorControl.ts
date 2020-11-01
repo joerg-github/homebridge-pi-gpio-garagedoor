@@ -313,20 +313,24 @@ export class GarageDoorControl extends EventEmitter<Events> {
     });
 
     this.pinActiveLow[config.pinSwitchOpen] = config.pinSwitchOpenActiveLow;
+    log.debug('rpio.open(%s) as output', config.pinSwitchOpen);
     rpio.open(config.pinSwitchOpen, rpio.OUTPUT, this.pinLogicalState2rpioState(config.pinSwitchOpen, PinLogicalState.OFF));
 
     if (config.pinSwitchOpen !== config.pinSwitchClose) {
       this.pinActiveLow[config.pinSwitchClose] = config.pinSwitchCloseActiveLow;
+      log.debug('rpio.open(%s) as output', config.pinSwitchClose);
       rpio.open(config.pinSwitchClose, rpio.OUTPUT, this.pinLogicalState2rpioState(config.pinSwitchClose, PinLogicalState.OFF));
     }
     
     if (config.pinSensorClose !== undefined) {
       this.pinActiveLow[config.pinSensorClose] = config.pinSensorCloseActiveOpen;
+      log.debug('rpio.open(%s) as input', config.pinSensorClose);
       rpio.open(config.pinSensorClose, rpio.INPUT, rpio.PULL_UP);
       rpio.poll(config.pinSensorClose, this.pinChanged, rpio.POLL_BOTH);
     }
     if (config.pinSensorOpen !== undefined) {
       this.pinActiveLow[config.pinSensorOpen] = config.pinSensorOpenActiveOpen;
+      log.debug('rpio.open(%s) as input', config.pinSensorOpen);
       rpio.open(config.pinSensorOpen, rpio.INPUT, rpio.PULL_UP);
       rpio.poll(config.pinSensorOpen, this.pinChanged, rpio.POLL_BOTH);
     }
