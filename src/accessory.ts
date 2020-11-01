@@ -15,7 +15,8 @@ import { GarageDoorAccessoryConfig } from './garageDoorAccessoryConfig';
 import { GarageDoorConfig } from './garageDoorConfig';
 import { 
   GarageDoorControl,
-  GarageDoorControlEventTypes } from './garageDoorControl';
+  GarageDoorControlEventTypes, 
+} from './garageDoorControl';
 
 
 let hap: HAP;
