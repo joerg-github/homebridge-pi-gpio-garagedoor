@@ -32,11 +32,6 @@ enum PinLogicalState {
 
 const PinLogicalStateStr: string[] = ['OFF', 'ON'];
 
-enum RpioState {
-    LOW = rpio.LOW,
-    HIGH = rpio.HIGH
-}
-
 type NotifyCallBack = (garageDoorControl: GarageDoorControl) => void;
 
 type DoorPosition = number;
@@ -66,23 +61,21 @@ export class GarageDoorControl extends EventEmitter<Events> {
     return (((this.pinActiveLow[pin] ? 1 : 0) ^ pinLogicalState) === 0 ? 0 : 1);
   }
 
-  private rpioState2pinLogicalState(pin: number, rpioState: RpioState): PinLogicalState {
-    return (this.pinActiveLow[pin] ? 1 : 0) ^ rpioState;  
-  }
-
-  private pinStateRead(pin: number): PinLogicalState {
-    return this.rpioState2pinLogicalState(pin, rpio.read(pin));
+  private binaryValue2pinLogicalState(pin: number, binaryValue: BinaryValue): PinLogicalState {
+    return (this.pinActiveLow[pin] ? 1 : 0) ^ binaryValue;  
   }
 
   private pinStateToggle(pin: number, duration: number) {
     this.log.debug('pinStateToggle: pin: %s, duration: %s ', pin, duration);
-    const gpio = new Gpio(pin, 'out', 'none', {activeLow: this.pinActiveLow[pin]});
+    if (Gpio.accessible) {
+      const gpio = new Gpio(pin, 'out', 'none', {activeLow: this.pinActiveLow[pin]});
 
-    gpio.writeSync(this.pinLogicalState2BinaryValue(pin, PinLogicalState.ON));
-    setTimeout(() => {
-      gpio.writeSync(this.pinLogicalState2BinaryValue(pin, PinLogicalState.OFF));
-      gpio.unexport;       
-    }, duration);
+      gpio.writeSync(this.pinLogicalState2BinaryValue(pin, PinLogicalState.ON));
+      setTimeout(() => {
+        gpio.writeSync(this.pinLogicalState2BinaryValue(pin, PinLogicalState.OFF));
+        gpio.unexport;       
+      }, duration);
+    }
   }
 
   private triggerDoorOperation(positionState: PositionState) {
@@ -324,24 +317,26 @@ export class GarageDoorControl extends EventEmitter<Events> {
       this.gpioClose = new Gpio(config.pinSwitchClose, 'out', 'none', {activeLow: config.pinSwitchCloseActiveLow});
     }
  */    
-    if (config.pinSensorClose !== undefined) {
-      this.pinActiveLow[config.pinSensorClose] = config.pinSensorCloseActiveOpen;
-      log.debug('gpio.open(%s) as input', config.pinSensorClose);
+    if (Gpio.accessible) {
+      if (config.pinSensorClose !== undefined) {
+        this.pinActiveLow[config.pinSensorClose] = config.pinSensorCloseActiveOpen;
+        log.debug('gpio.open(%s) as input', config.pinSensorClose);
 
-      this.gpioSensorClose = new Gpio(config.pinSensorClose, 'in', 'both', {activeLow: config.pinSensorCloseActiveOpen});
-      this.gpioSensorClose.watch((err, value) => {
-        this.pinChanged(config.pinSensorClose as number, value);
-      });
-    }
+        this.gpioSensorClose = new Gpio(config.pinSensorClose, 'in', 'both', {activeLow: config.pinSensorCloseActiveOpen});
+        this.gpioSensorClose.watch((err, value) => {
+          this.pinChanged(config.pinSensorClose as number, value);
+        });
+      }
 
-    if (config.pinSensorOpen !== undefined) {
-      this.pinActiveLow[config.pinSensorOpen] = config.pinSensorOpenActiveOpen;
-      log.debug('gpio.open(%s) as input', config.pinSensorOpen);
+      if (config.pinSensorOpen !== undefined) {
+        this.pinActiveLow[config.pinSensorOpen] = config.pinSensorOpenActiveOpen;
+        log.debug('gpio.open(%s) as input', config.pinSensorOpen);
 
-      this.gpioSensorOpen = new Gpio(config.pinSensorOpen, 'in', 'both', {activeLow: config.pinSensorOpenActiveOpen});
-      this.gpioSensorOpen.watch((err, value) => {
-        this.pinChanged(config.pinSensorOpen as number, value);
-      });
+        this.gpioSensorOpen = new Gpio(config.pinSensorOpen, 'in', 'both', {activeLow: config.pinSensorOpenActiveOpen});
+        this.gpioSensorOpen.watch((err, value) => {
+          this.pinChanged(config.pinSensorOpen as number, value);
+        });
+      }
     }
   }
 }
