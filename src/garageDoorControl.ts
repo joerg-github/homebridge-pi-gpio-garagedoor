@@ -120,6 +120,28 @@ export class GarageDoorControl extends EventEmitter<Events> {
     }
   }
 
+  private startPositionInterval(duration: number, doInc: boolean) {
+    this.log.debug('startPositionInterval: duration: %s, doInc: %s', duration, doInc);
+    if (doInc) {
+      this.currentPositionIntervall = setInterval(() => {
+        this.currentPosition++;
+      }, 100);
+    } else {       
+      this.currentPositionIntervall = setInterval(() => {
+        this.currentPosition--;
+      }, 100); 
+    }
+
+    this.currentPositionTimeout = setTimeout(() => {
+      this.log.debug('currentPositionTimeout');
+      clearInterval(this.currentPositionIntervall);
+
+      this._positionState = PositionState.STOPPED;
+      this.currentPosition = this.targetPosition;
+    }, duration);
+
+  }
+
   private clearPositionTimeout() {
     this.log.debug('clearPositionTimeout');
     clearInterval(this.currentPositionIntervall);
@@ -227,6 +249,7 @@ export class GarageDoorControl extends EventEmitter<Events> {
         if (newPositionState !== this.positionState ) {
           this.log.info('Door is moving alread. Stopping Door');                
           this.triggerDoorOperation(newPositionState);
+
           delayDoorTrigger = (newPositionState === PositionState.CLOSING 
             ? this.config.pinSwitchClosePulsDuration
             : this.config.pinSwitchOpenPulsDuration) + this.config.pinSwitchConsecutiveCallDelay;
@@ -236,37 +259,24 @@ export class GarageDoorControl extends EventEmitter<Events> {
 
       difPosition = Math.abs(this.targetPosition - this.currentPosition);
       this.log.debug('Door position diff: %s', difPosition);
+
       if (newPositionState === PositionState.OPENING) {
         duration = Math.round(difPosition / 100 * this.config.durationOpen);   
-        this.currentPositionIntervall = setInterval(() => {
-          this.currentPosition++;
-        }, this.config.durationOpen / 100);       
       } else {
         duration = Math.round(difPosition / 100 * this.config.durationClose);          
-        this.currentPositionIntervall = setInterval(() => {
-          this.currentPosition--;
-        }, this.config.durationClose / 100);       
       }
-
-      this.positionState = newPositionState;
-
-      this.currentPositionTimeout = setTimeout(() => {
-        this.log.debug('currentPositionTimeout');
-        clearInterval(this.currentPositionIntervall);
-
-        this._positionState = PositionState.STOPPED;
-        this.currentPosition = this.targetPosition;
-      }, duration);
 
       if (delayDoorTrigger > 0) {
         setTimeout(() => {
+          this.startPositionInterval(duration, newPositionState === PositionState.OPENING);
           this.triggerDoorOperation(newPositionState);
         }, delayDoorTrigger);
       } else {
+        this.startPositionInterval(duration, newPositionState === PositionState.OPENING);
         this.triggerDoorOperation(newPositionState);    
       }
       
-            
+      this.positionState = newPositionState;            
     } else {
       this.log.debug('Current postion matches target postion %s', value);
     }  
