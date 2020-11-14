@@ -53,26 +53,17 @@ export class GarageDoorControl extends EventEmitter<Events> {
   private _targetPosition: DoorPosition = 0;
   private currentPositionIntervall!: ReturnType<typeof setInterval>;
   private currentPositionTimeout!: ReturnType<typeof setTimeout>;
-  private pinActiveLow: boolean[] = [];
   private gpioSensorOpen: Gpio | undefined;
   private gpioSensorClose: Gpio | undefined;
   
-  private pinLogicalState2BinaryValue(pin: number, pinLogicalState: PinLogicalState): BinaryValue {
-    return (((this.pinActiveLow[pin] ? 1 : 0) ^ pinLogicalState) === 0 ? 0 : 1);
-  }
-
-  private binaryValue2pinLogicalState(pin: number, binaryValue: BinaryValue): PinLogicalState {
-    return (this.pinActiveLow[pin] ? 1 : 0) ^ binaryValue;  
-  }
-
   private pinStateToggle(pin: number, duration: number) {
     this.log.debug('pinStateToggle: pin: %s, duration: %s ', pin, duration);
     if (Gpio.accessible) {
-      const gpio = new Gpio(pin, 'out', 'none', {activeLow: this.pinActiveLow[pin]});
+      const gpio = new Gpio(pin, 'out', 'none');
 
-      gpio.writeSync(this.pinLogicalState2BinaryValue(pin, PinLogicalState.ON));
+      gpio.writeSync(Gpio.HIGH);
       setTimeout(() => {
-        gpio.writeSync(this.pinLogicalState2BinaryValue(pin, PinLogicalState.OFF));
+        gpio.writeSync(Gpio.LOW);
         gpio.unexport;       
       }, duration);
     }
@@ -316,21 +307,9 @@ export class GarageDoorControl extends EventEmitter<Events> {
 
     log.info('Initializing GarageDoorControl');
 
-    /* 
-    this.pinActiveLow[config.pinSwitchOpen] = config.pinSwitchOpenActiveLow;
-    log.debug('rpio.open(%s) as output', config.pinSwitchOpen);
-    this.gpioOpen = new Gpio(config.pinSwitchOpen, 'out', 'none', {activeLow: config.pinSwitchOpenActiveLow});
-
-    if (config.pinSwitchOpen !== config.pinSwitchClose) {
-      this.pinActiveLow[config.pinSwitchClose] = config.pinSwitchCloseActiveLow;
-      log.debug('rpio.open(%s) as output', config.pinSwitchClose);
-      this.gpioClose = new Gpio(config.pinSwitchClose, 'out', 'none', {activeLow: config.pinSwitchCloseActiveLow});
-    }
- */    
     if (Gpio.accessible) {
       if (config.pinSensorClose !== undefined) {
-        this.pinActiveLow[config.pinSensorClose] = config.pinSensorCloseActiveOpen;
-        log.debug('gpio.open(%s) as input', config.pinSensorClose);
+        log.debug('gpio open pin %s as input', config.pinSensorClose);
 
         this.gpioSensorClose = new Gpio(config.pinSensorClose, 'in', 'both', {activeLow: config.pinSensorCloseActiveOpen});
         this.gpioSensorClose.watch((err, value) => {
@@ -339,8 +318,7 @@ export class GarageDoorControl extends EventEmitter<Events> {
       }
 
       if (config.pinSensorOpen !== undefined) {
-        this.pinActiveLow[config.pinSensorOpen] = config.pinSensorOpenActiveOpen;
-        log.debug('gpio.open(%s) as input', config.pinSensorOpen);
+        log.debug('gpio open pin %s as input', config.pinSensorOpen);
 
         this.gpioSensorOpen = new Gpio(config.pinSensorOpen, 'in', 'both', {activeLow: config.pinSensorOpenActiveOpen});
         this.gpioSensorOpen.watch((err, value) => {

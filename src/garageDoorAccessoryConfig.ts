@@ -9,10 +9,8 @@ export class GarageDoorAccessoryConfig implements GarageDoorConfig {
 
   name: string;
   pinSwitchOpen: number;
-  pinSwitchOpenActiveLow: boolean;
   pinSwitchOpenPulsDuration: number;
   pinSwitchClose: number;
-  pinSwitchCloseActiveLow: boolean;
   pinSwitchClosePulsDuration: number;
   pinSwitchConsecutiveCallDelay: number;
   pinSensorOpen: number | undefined = undefined;
@@ -33,11 +31,8 @@ export class GarageDoorAccessoryConfig implements GarageDoorConfig {
       throw new Error(`Configuration error. pinSwitchOpen expected number, got '${config.pinSwitchOpen}'.`);
     }
 
-    this.pinSwitchOpenActiveLow = config.pinSwitchOpenActiveLow ? config.pinSwitchOpenActiveLow as boolean : false;
     this.pinSwitchOpenPulsDuration = config.pinSwitchOpenPulsDuration ? config.pinSwitchOpenPulsDuration as number : 200;
     this.pinSwitchClose = config.pinSwitchClose ? config.pinSwitchClose as number : this.pinSwitchOpen;
-    this.pinSwitchCloseActiveLow = config.pinSwitchCloseActiveLow ? 
-      config.pinSwitchCloseActiveLow as boolean : this.pinSwitchOpenActiveLow;
     this.pinSwitchClosePulsDuration = config.pinSwitchClosePulsDuration ? 
       config.pinSwitchClosePulsDuration as number : this.pinSwitchOpenPulsDuration;
     this.pinSwitchConsecutiveCallDelay = config.pinSwitchConsecutiveCallDelay ? config.pinSwitchConsecutiveCallDelay as number : 1000;

@@ -17,11 +17,6 @@
         "type": "number",
         "required": true
       },
-      "pinSwitchOpenActiveLow": {
-        "title": "Is Active Low",
-        "type": "boolean",
-        "placeholder": "false"
-      },
       "pinSwitchOpenPulsDuration": {
         "title": "Puls Duration [ms]",
         "type": "number",
@@ -30,14 +25,6 @@
       "pinSwitchClose": {
         "title": "Pin Number",
         "type": "number"
-      },
-      "pinSwitchCloseActiveLow": {
-        "title": "Is Active Low",
-        "type": "boolean",
-        "placeholder": "false",
-        "condition": {
-          "functionBody": "return model.pinSwitchClose ? true : false;"
-        }
       },
       "pinSwitchClosePulsDuration": {
         "title": "Puls Duration [ms]",
@@ -103,8 +90,7 @@
               "description": "Output to trigger Door open.",
               "items": [
                 "pinSwitchOpen",
-                "pinSwitchOpenPulsDuration",
-                "pinSwitchOpenActiveLow"
+                "pinSwitchOpenPulsDuration"
               ]
             },
             {
@@ -115,8 +101,7 @@
               "description": "Output to trigger Door Close.",
               "items": [
                 "pinSwitchClose",
-                "pinSwitchClosePulsDuration",
-                "pinSwitchCloseActiveLow"
+                "pinSwitchClosePulsDuration"
               ]
             }
           ]

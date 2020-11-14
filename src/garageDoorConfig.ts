@@ -1,10 +1,8 @@
 export interface GarageDoorConfig {
     name: string;
     pinSwitchOpen: number;
-    pinSwitchOpenActiveLow: boolean;
     pinSwitchOpenPulsDuration: number;
     pinSwitchClose: number;
-    pinSwitchCloseActiveLow: boolean;
     pinSwitchClosePulsDuration: number;
     pinSwitchConsecutiveCallDelay: number; 
     pinSensorOpen: number | undefined;
