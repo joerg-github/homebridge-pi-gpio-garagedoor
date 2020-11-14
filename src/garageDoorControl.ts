@@ -150,11 +150,13 @@ export class GarageDoorControl extends EventEmitter<Events> {
       switch (value) {
         case ValueDoorState.CLOSED:
           this._currentPosition = 0;
+          this._targetPosition = 0;
           this._positionState = PositionState.STOPPED;
           break;
     
         case ValueDoorState.OPEN:
           this._currentPosition = 100;
+          this._targetPosition = 100;
           this._positionState = PositionState.STOPPED;
           break;
 
