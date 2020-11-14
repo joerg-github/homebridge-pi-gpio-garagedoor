@@ -90,7 +90,7 @@ export class GarageDoorControl extends EventEmitter<Events> {
     this.log.debug('pinChanged: pin: %s, state: %s', pin, PinLogicalStateStr[value]);
     switch (pin) {
       case this.config.pinSensorClose:
-        this.log.info('SpinChanged: ensor Close deteced');
+        this.log.info('SpinChanged: Sensor Close deteced');
         if (value === PinLogicalState.ON) {
           this.clearPositionTimeout;
           this.currentDoorState = ValueDoorState.CLOSED;
@@ -311,7 +311,7 @@ export class GarageDoorControl extends EventEmitter<Events> {
       if (config.pinSensorClose !== undefined) {
         log.debug('gpio open pin %s as input', config.pinSensorClose);
 
-        this.gpioSensorClose = new Gpio(config.pinSensorClose, 'in', 'both', {activeLow: config.pinSensorCloseActiveOpen});
+        this.gpioSensorClose = new Gpio(config.pinSensorClose, 'in', 'both');
         this.gpioSensorClose.watch((err, value) => {
           this.pinChanged(config.pinSensorClose as number, value);
         });
@@ -320,7 +320,7 @@ export class GarageDoorControl extends EventEmitter<Events> {
       if (config.pinSensorOpen !== undefined) {
         log.debug('gpio open pin %s as input', config.pinSensorOpen);
 
-        this.gpioSensorOpen = new Gpio(config.pinSensorOpen, 'in', 'both', {activeLow: config.pinSensorOpenActiveOpen});
+        this.gpioSensorOpen = new Gpio(config.pinSensorOpen, 'in', 'both');
         this.gpioSensorOpen.watch((err, value) => {
           this.pinChanged(config.pinSensorOpen as number, value);
         });
