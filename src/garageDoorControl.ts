@@ -147,6 +147,7 @@ export class GarageDoorControl extends EventEmitter<Events> {
     if (this._currentDoorState !== value) {
       this.log.info('Set currentDoorState: %s, is: %s', ValueDoorStateStr[value], ValueDoorStateStr[this._currentDoorState]);   
       this._currentDoorState = value;
+      this._targetDoorState = value;
       switch (value) {
         case ValueDoorState.CLOSED:
           this._currentPosition = 0;
