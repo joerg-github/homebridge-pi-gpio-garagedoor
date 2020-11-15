@@ -39,6 +39,7 @@ class GarageDoor implements AccessoryPlugin {
   private readonly garageDoorOpenerService: Service;
   private readonly informationService: Service;
   private characteristicCurrentDoorState: Characteristic;
+  private characteristicTargetDoorState: Characteristic;
   private characteristicCurrentPosition: Characteristic;
 
   constructor(log: Logging, config: AccessoryConfig) {
@@ -60,7 +61,7 @@ class GarageDoor implements AccessoryPlugin {
       });
 
     // -- TargetDoorState -- https://developer.apple.com/documentation/homekit/hmcharacteristictypetargetdoorstate
-    this.garageDoorOpenerService
+    this.characteristicTargetDoorState = this.garageDoorOpenerService
       .getCharacteristic(hap.Characteristic.TargetDoorState)
       .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
         callback(undefined, this.garageDoorControl.targetDoorState);
@@ -90,7 +91,7 @@ class GarageDoor implements AccessoryPlugin {
     this.garageDoorControl = new GarageDoorControl(log, this.garageDoorConfig);
     this.garageDoorControl.on(GarageDoorControlEventTypes.CHANGE, () => {
       this.characteristicCurrentDoorState.setValue(this.garageDoorControl.currentDoorState);
-
+      this.characteristicTargetDoorState.setValue(this.garageDoorControl.targetDoorState);
       this.characteristicCurrentPosition.setValue(this.garageDoorControl.currentPosition);
     });
   
