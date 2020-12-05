@@ -111,16 +111,16 @@ export class GarageDoorControl extends EventEmitter<Events> {
     }
   }
 
-  private startPositionInterval(duration: number, doInc: boolean) {
+  private startPositionInterval(duration: number, steps: number, doInc: boolean) {
     this.log.debug('startPositionInterval: duration: %s, doInc: %s', duration, doInc);
     if (doInc) {
       this.currentPositionIntervall = setInterval(() => {
         this.currentPosition++;
-      }, 100);
+      }, duration / steps);
     } else {       
       this.currentPositionIntervall = setInterval(() => {
         this.currentPosition--;
-      }, 100); 
+      }, duration / steps); 
     }
 
     this.currentPositionTimeout = setTimeout(() => {
@@ -255,18 +255,18 @@ export class GarageDoorControl extends EventEmitter<Events> {
       this.log.debug('Door position diff: %s', difPosition);
 
       if (newPositionState === PositionState.OPENING) {
-        duration = Math.round(difPosition / 100 * this.config.durationOpen);   
+        duration = this.config.durationOpen;   
       } else {
-        duration = Math.round(difPosition / 100 * this.config.durationClose);          
+        duration = this.config.durationClose;          
       }
 
       if (delayDoorTrigger > 0) {
         setTimeout(() => {
-          this.startPositionInterval(duration, newPositionState === PositionState.OPENING);
+          this.startPositionInterval(duration, difPosition, newPositionState === PositionState.OPENING);
           this.triggerDoorOperation(newPositionState);
         }, delayDoorTrigger);
       } else {
-        this.startPositionInterval(duration, newPositionState === PositionState.OPENING);
+        this.startPositionInterval(duration, difPosition, newPositionState === PositionState.OPENING);
         this.triggerDoorOperation(newPositionState);    
       }
       
@@ -314,7 +314,7 @@ export class GarageDoorControl extends EventEmitter<Events> {
       if (config.pinSensorClose !== undefined) {
         log.debug('gpio open pin %s as input', config.pinSensorClose);
 
-        this.gpioSensorClose = new Gpio(config.pinSensorClose, 'in', 'both');
+        this.gpioSensorClose = new Gpio(config.pinSensorClose, 'in', 'both', {debounceTimeout: 1000});
         this.gpioSensorClose.watch((err, value) => {
           this.pinChanged(config.pinSensorClose as number, value);
         });
@@ -323,7 +323,7 @@ export class GarageDoorControl extends EventEmitter<Events> {
       if (config.pinSensorOpen !== undefined) {
         log.debug('gpio open pin %s as input', config.pinSensorOpen);
 
-        this.gpioSensorOpen = new Gpio(config.pinSensorOpen, 'in', 'both');
+        this.gpioSensorOpen = new Gpio(config.pinSensorOpen, 'in', 'both', {debounceTimeout: 1000});
         this.gpioSensorOpen.watch((err, value) => {
           this.pinChanged(config.pinSensorOpen as number, value);
         });
