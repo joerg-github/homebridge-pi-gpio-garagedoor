@@ -90,7 +90,7 @@ export class GarageDoorControl extends EventEmitter<Events> {
     this.log.debug('pinChanged: pin: %s, state: %s', pin, PinLogicalStateStr[value]);
     switch (pin) {
       case this.config.pinSensorClose:
-        this.log.info('SpinChanged: Sensor Close deteced');
+        this.log.info('pinChanged: Sensor Close deteced');
         if (value === PinLogicalState.ON) {
           this.clearPositionTimeout();
           this.currentDoorState = ValueDoorState.CLOSED;
