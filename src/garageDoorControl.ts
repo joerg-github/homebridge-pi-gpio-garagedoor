@@ -90,16 +90,16 @@ export class GarageDoorControl extends EventEmitter<Events> {
     this.log.debug('pinChanged: pin: %s, state: %s', pin, PinLogicalStateStr[value]);
     switch (pin) {
       case this.config.pinSensorClose:
-        this.log.info('pinChanged: Sensor Close deteced');
         if (value === PinLogicalState.ON) {
+          this.log.info('pinChanged: Sensor Close deteced');
           this.clearPositionTimeout();
           this.currentDoorState = ValueDoorState.CLOSED;
         }
         break;
       
       case this.config.pinSensorOpen:
-        this.log.info('pinChanged: Sensor Open deteced');
         if (value === PinLogicalState.ON) {
+          this.log.info('pinChanged: Sensor Open deteced');
           this.clearPositionTimeout();
           this.currentDoorState = ValueDoorState.OPEN;
         }
@@ -211,11 +211,12 @@ export class GarageDoorControl extends EventEmitter<Events> {
 
   public set currentPosition(value: DoorPosition) {
     if (this._currentPosition !== value) {
-      this.log.debug('Set currentPosition: %s, is %s', value, this._currentPosition);
+      this.log.info('Set currentPosition: %s, is %s', value, this._currentPosition);
 
       this._currentPosition = value;
 
       if (value === 0) {
+        
         this._currentDoorState = ValueDoorState.CLOSED;
       } else if (value === 100) {
         this._currentDoorState = ValueDoorState.OPEN;
