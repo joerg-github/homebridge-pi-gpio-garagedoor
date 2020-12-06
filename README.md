@@ -17,11 +17,12 @@ Yet Another Homebridge Plugin
 
 Of course there are already a lot of plugins for this purpose, but since I didn't find the one fitting exactly my needs, I thought this is a good opportunity to get more into TypeScript.
 
+<!-- 
 ## Installation 
 
 - Install Homebridge. See the [Homebridge documentation](https://github.com/nfarina/homebridge#readme) for more information.
 - Install Plugin ```[sudo] npm install homebridge-pi-gpio-garagedoor```
-
+ -->
 ## Homebrige configuration
 
 The plug in can be configured using the settings page.
