@@ -1,5 +1,5 @@
 {
-  "private": true,
+  "private": false,
   "displayName": "Garagedoor",
   "name": "homebridge-pi-gpio-garagedoor",
   "version": "1.0.0",
