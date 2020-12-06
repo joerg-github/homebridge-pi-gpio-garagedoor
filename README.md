@@ -24,6 +24,9 @@ Of course there are already a lot of plugins for this purpose, but since I didn'
 
 ## Homebrige configuration
 
+The plug in can be configured using the settings page.
+Of course you can also edit the JSON configuration directly.
+
 Minimum configuration:
 ````
 "accessories": [
@@ -57,5 +60,5 @@ Fields:
 
 ## Pin numbering
 
-The pin numbers are identified by their physical header location: Pins 1 to 26 (A/B) or Pins 1 to 40 (A+/B+)
-<img src="https://www.raspberrypi.org/documentation/usage/gpio/images/GPIO-Pinout-Diagram-2.png" width=80%>
+The pin numbers are identified by their physical header location: Pins 1 to 26 (A/B) or Pins 1 to 40 (A+/B+)<br/>
+<img src="https://www.raspberrypi.org/documentation/usage/gpio/images/GPIO.png" width=500>
