@@ -2,7 +2,7 @@
   "private": false,
   "displayName": "Garagedoor",
   "name": "homebridge-pi-gpio-garagedoor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Homebridge plugin to control a garagedoor via Raspberry Pi GPIO pins",
   "license": "Apache-2.0",
   "repository": {
